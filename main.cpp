@@ -1,4 +1,5 @@
 #include<iostream>
+#include<fstream>
 
 using namespace std;
 
@@ -6,6 +7,30 @@ struct user{
     string name;
     string password;
 };
+
+void loadUsers(user userlist[], int &count, int max) {
+    fstream myfile;
+    myfile.open("store.txt" , ios::in);
+    count = 0;
+    if (myfile.is_open()) {
+        while (myfile >> userlist[count].name >> userlist[count].password) {
+            count++;
+            if (count >= max) break; // Stop if max capacity is reached
+        }
+        myfile.close();
+    }
+}
+
+void saveUser(const user& newUser) {
+    fstream myfile("store.txt", ios::app); // 'app' mode to append data
+    if (myfile.is_open()) {
+        myfile << newUser.name << " " << newUser.password << endl;
+        myfile.close();
+    } else {
+        cout << "Error: Unable to open file for writing." << endl;
+    }
+}
+
 
 void userSignup(user userlist[] , int max){
     int count = 0;
@@ -21,8 +46,11 @@ void userSignup(user userlist[] , int max){
     else{
         userlist[count].name = name2  ;
         userlist[count].password = password2  ;
+        saveUser(userlist[count]);
+        count++;
+
     }
-    count++;
+    
 }
 void adminLogin(){
     string name3,password3;
@@ -72,6 +100,8 @@ int main(){
     int cho;  
     int max = 100;
     user userlist[max];
+    int count = 0;
+    loadUsers(userlist, count, max);
 
 
  do{       
